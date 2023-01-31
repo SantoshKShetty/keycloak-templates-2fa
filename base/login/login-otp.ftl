@@ -1,58 +1,49 @@
+<#--  This change shall be copied to `two-factor-authentication.ftl`  -->
 <#import "template.ftl" as layout>
-<@layout.registrationLayout displayMessage=!messagesPerField.existsError('totp'); section>
-    <#if section="header">
-        ${msg("doLogIn")}
-    <#elseif section="form">
-        <form id="kc-otp-login-form" class="${properties.kcFormClass!}" action="${url.loginAction}"
-            method="post">
-            <#if otpLogin.userOtpCredentials?size gt 1>
-                <div class="${properties.kcFormGroupClass!}">
-                    <div class="${properties.kcInputWrapperClass!}">
-                        <#list otpLogin.userOtpCredentials as otpCredential>
-                            <input id="kc-otp-credential-${otpCredential?index}" class="${properties.kcLoginOTPListInputClass!}" type="radio" name="selectedCredentialId" value="${otpCredential.id}" <#if otpCredential.id == otpLogin.selectedCredentialId>checked="checked"</#if>>
-                            <label for="kc-otp-credential-${otpCredential?index}" class="${properties.kcLoginOTPListClass!}" tabindex="${otpCredential?index}">
-                                <span class="${properties.kcLoginOTPListItemHeaderClass!}">
-                                    <span class="${properties.kcLoginOTPListItemIconBodyClass!}">
-                                      <i class="${properties.kcLoginOTPListItemIconClass!}" aria-hidden="true"></i>
-                                    </span>
-                                    <span class="${properties.kcLoginOTPListItemTitleClass!}">${otpCredential.userLabel}</span>
-                                </span>
-                            </label>
-                        </#list>
+<@layout.registrationLayout displayInfo=true displayMessage=false; section>
+    <#if section="form">
+        <div id="kc-form">
+            <div id="kc-form-wrapper">
+                <div id="kc-2fa-desc" class="${properties.kcFormGroupClass!}">
+                    ${kcSanitize(msg("2faOtpDesc", "joe.doe@synacor.com"))?no_esc}
+                </div>
+
+                <form id="two-factor-authentication-form" action="${url.loginAction}" method="post">
+                    <div class="${properties.kcFormGroupClass!}">
+                        <input
+                            type="text"
+                            name="otp"
+                            class="${properties.kcInputClass!}"
+                            placeholder="${msg("2faOtpField")}"
+                        />
+                    </div>
+
+                    <div id="kc-form-buttons">
+                        <div class="${properties.kcFormGroupClass!}">
+                            <input tabindex="4" type="submit" value="${msg("verifyOtpBtn")}"
+                                class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
+                            />
+                        </div>
+                    </div>
+                </form>
+
+                <div id="kc-form-buttons">
+                    <div class="${properties.kcFormGroupClass!}">
+                        <a tabindex="4" href="${url.loginRestartFlowUrl}"
+                            class="${properties.kcButtonClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}">
+                            ${msg("doBack")}
+                        </a>
                     </div>
                 </div>
-            </#if>
-
-            <div class="${properties.kcFormGroupClass!}">
-                <div class="${properties.kcLabelWrapperClass!}">
-                    <label for="otp" class="${properties.kcLabelClass!}">${msg("loginOtpOneTime")}</label>
-                </div>
-
-            <div class="${properties.kcInputWrapperClass!}">
-                <input id="otp" name="otp" autocomplete="off" type="text" class="${properties.kcInputClass!}"
-                       autofocus aria-invalid="<#if messagesPerField.existsError('totp')>true</#if>"/>
-
-                <#if messagesPerField.existsError('totp')>
-                    <span id="input-error-otp-code" class="${properties.kcInputErrorMessageClass!}"
-                          aria-live="polite">
-                        ${kcSanitize(messagesPerField.get('totp'))?no_esc}
-                    </span>
-                </#if>
             </div>
         </div>
-
-            <div class="${properties.kcFormGroupClass!}">
-                <div id="kc-form-options" class="${properties.kcFormOptionsClass!}">
-                    <div class="${properties.kcFormOptionsWrapperClass!}">
-                    </div>
-                </div>
-
-                <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
-                    <input
-                        class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
-                        name="login" id="kc-login" type="submit" value="${msg("doLogIn")}" />
+    <#elseif section="info">
+        <div class="${properties.kcFormGroupClass!}">
+            <div id="kc-form-options">
+                <div class="${properties.kcFormOptionsWrapperClass!}">
+                    <p><a tabindex="6" href="javascript:void(0);">${msg("2faSendNewOtp")}</a></p>
                 </div>
             </div>
-        </form>
+        </div>
     </#if>
 </@layout.registrationLayout>
